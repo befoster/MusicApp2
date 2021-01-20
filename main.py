@@ -202,16 +202,17 @@ class PlaylistsScreen(Screen):
                 self.sm.current = 'playlists'
 """
 
+
 class Tab(ScrollView, MDTabsBase):
     pass
 
 
 class SongsScreen(Screen):
-    def __init__(self, nav, **kwargs):
+    def __init__(self, **kwargs):
         super(SongsScreen, self).__init__(**kwargs)
         layout = MDBoxLayout(orientation='vertical')
         toolbar = MDToolbar(title='Songs', pos_hint={"top": 1})
-        toolbar.left_action_items.append(['menu', lambda x: nav.set_state("open")])
+        #toolbar.left_action_items.append(['menu', lambda x: nav.set_state("open")])
         toolbar.right_action_items.append(['cancel', self.unselect])
         toolbar.right_action_items.append(['arrow-up-down', self.reverse_order])
         toolbar.right_action_items.append(['play', self.play_playlist])
@@ -242,9 +243,25 @@ class SongsScreen(Screen):
             tabs.add_widget(tabs_list[i])
         layout.add_widget(tabs)
 
-        layout.add_widget(BottomBar())
+        #layout.add_widget(BottomBar())
         self.add_widget(layout)
-        
+
+    def unselect(self, btn):
+        pass
+
+    def reverse_order(self, btn):
+        pass
+
+    def play_playlist(self, btn):
+        pass
+
+    def other_action(self, btn):
+        pass
+
+    def sort_songs(self):
+        pass
+
+
 """
     def select(self, btn):
         for k, v in self.songs.items():
@@ -484,36 +501,37 @@ class BottomBar(MDBoxLayout):
                     sound.seek(sound_pos)
 """
 
+
 class MusicApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = 'Dark'
-        self.load_user_info()
+        # self.load_user_info()
 
-        #menu_items = MDList()
-        #menu_items.add_widget(OneLineListItem(text='Playlists', on_press=lambda x: self.change_screen('playlists')))
-        #menu_items.add_widget(OneLineListItem(text='Songs', on_press=lambda x: self.change_screen('songs')))
-        #menu_items.add_widget(OneLineListItem(text='Settings', on_press=lambda x: self.change_screen('settings')))
-        #scroll = ScrollView()
-        #scroll.add_widget(menu_items)
-        #self.nav_drawer = MDNavigationDrawer()
-        #self.nav_drawer.add_widget(scroll)
+        # menu_items = MDList()
+        # menu_items.add_widget(OneLineListItem(text='Playlists', on_press=lambda x: self.change_screen('playlists')))
+        # menu_items.add_widget(OneLineListItem(text='Songs', on_press=lambda x: self.change_screen('songs')))
+        # menu_items.add_widget(OneLineListItem(text='Settings', on_press=lambda x: self.change_screen('settings')))
+        # scroll = ScrollView()
+        # scroll.add_widget(menu_items)
+        # self.nav_drawer = MDNavigationDrawer()
+        # self.nav_drawer.add_widget(scroll)
 
         self.sm = ScreenManager()
-        #self.playlists_screen = PlaylistsScreen(self.nav_drawer, name='playlists')
-        self.songs_screen = SongsScreen(self.nav_drawer, name='songs')
-        #settings_screen = SettingsScreen(self.nav_drawer, name='settings')
-        #self.sm.add_widget(self.playlists_screen)
+        # self.playlists_screen = PlaylistsScreen(self.nav_drawer, name='playlists')
+        self.songs_screen = SongsScreen(name='songs')
+        # settings_screen = SettingsScreen(self.nav_drawer, name='settings')
+        # self.sm.add_widget(self.playlists_screen)
         self.sm.add_widget(self.songs_screen)
-        #self.sm.add_widget(settings_screen)
+        # self.sm.add_widget(settings_screen)
         self.sm.current = 'songs'
 
-        #nav = NavigationLayout()
-        #nav.add_widget(self.sm)
-        #nav.add_widget(self.nav_drawer)
-        #screen = Screen()
-        #screen.add_widget(nav)
+        # nav = NavigationLayout()
+        # nav.add_widget(self.sm)
+        # nav.add_widget(self.nav_drawer)
+        # screen = Screen()
+        # screen.add_widget(nav)
 
-        #return screen
+        # return screen
         return self.sm
 
 
