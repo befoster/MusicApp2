@@ -173,8 +173,12 @@ class MusicApp(MDApp):
 
     def build(self):
         self.theme_cls.theme_style = 'Dark'
-        self.user_info = UserInfo(os.path.join(self.user_data_dir if platform == 'win'
-                                               else '/Internal Storage/MusicApp/', 'music_app_save.txt'))
+        if platform == 'win':
+            self.user_info = UserInfo(os.path.join(self.user_data_dir, 'music_app_save.txt'))
+        else:
+            from android.permissions import request_permissions, Permission
+            request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+            self.user_info = UserInfo('music_app_save.txt')
 
         menu_items = MDList()
         menu_items.add_widget(OneLineListItem(text='Playlists', on_press=self.menu_action))
