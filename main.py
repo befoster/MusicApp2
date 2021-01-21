@@ -11,6 +11,7 @@ from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.textfield import MDTextField
 from kivy.core.audio import SoundLoader
+from kivy.utils import platform
 import os
 import random
 
@@ -172,7 +173,8 @@ class MusicApp(MDApp):
 
     def build(self):
         self.theme_cls.theme_style = 'Dark'
-        self.user_info = UserInfo(self.user_data_dir + '\\' + 'music_app_save.txt')
+        self.user_info = UserInfo(os.path.join(self.user_data_dir if platform == 'win'
+                                               else '/Internal Storage/MusicApp/', 'music_app_save.txt'))
 
         menu_items = MDList()
         menu_items.add_widget(OneLineListItem(text='Playlists', on_press=self.menu_action))
