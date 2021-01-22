@@ -104,16 +104,16 @@ class UserInfo:
                         if line.strip() == 'Playlists':
                             case += 1
                         else:
-                            parts = line.strip().split(';')
+                            parts = line.strip().split(';#;')
                             self.songs[int(parts[0])] = [parts[1], parts[2], parts[3], parts[5:], float(parts[4])]
                     elif case == 3:
                         if line.strip() == 'Recent Playlists':
                             case += 1
                         else:
-                            parts = line.strip().split(';')
+                            parts = line.strip().split(';#;')
                             self.playlists[parts[0]] = [int(k) for k in parts[1:]]
                     else:
-                        parts = line.strip().split(';')
+                        parts = line.strip().split(';#;')
                         if parts[0] == 'p':
                             self.recent.append(parts[1])
                         else:
@@ -130,7 +130,7 @@ class UserInfo:
         existing = {v[0] for v in self.songs.values()}
         try:
             for file in os.listdir(folder):
-                if '.mp3' in file or '.wav' in file or '.ogg' in file:
+                if '.wav' in file or '.ogg' in file:
                     path = os.path.join(folder, file)
                     if path not in existing:
                         existing.add(path)
@@ -143,16 +143,16 @@ class UserInfo:
         with open(self.file, 'w+') as f:
             f.write(','.join(self.folders) + '\n' + str(self.hist_len) + '\n')
             for k, v in self.songs.items():
-                f.write(';'.join([str(k), v[0], v[1], v[2], str(v[4])] + v[3]) + '\n')
+                f.write(';#;'.join([str(k), v[0], v[1], v[2], str(v[4])] + v[3]) + '\n')
             f.write('Playlists\n')
             for k, v in self.playlists.items():
-                f.write(';'.join([k] + [str(val) for val in v]) + '\n')
+                f.write(';#;'.join([k] + [str(val) for val in v]) + '\n')
             f.write('Recent Playlists')
             for k in self.recent:
                 if k in self.playlists:
-                    f.write('\np;' + k)
+                    f.write('\np;#;' + k)
                 else:
-                    f.write('\nt;' + ';'.join([str(s) for s in self.temp_playlists[k]]))
+                    f.write('\nt;#;' + ';#;'.join([str(s) for s in self.temp_playlists[k]]))
 
 
 def get_start(s):
