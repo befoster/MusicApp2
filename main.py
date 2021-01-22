@@ -37,11 +37,15 @@ class Sound:
             self.sound.stop()
             self.keep_playing = True
         self.sound = SoundLoader.load(self.playlist[self.idx][0])
-        self.sound.on_stop = self.next_song
-        self.sound.play()
-        if self.pos > 0:
-            self.sound.seek(self.pos)
-        self.label.text = self.playlist[self.idx][1]
+        if self.sound is None:
+            print('Unable to play ' + self.playlist[self.idx][0])
+            self.playlist = list()
+        else:
+            self.sound.on_stop = self.next_song
+            self.sound.play()
+            if self.pos > 0:
+                self.sound.seek(self.pos)
+            self.label.text = self.playlist[self.idx][1]
 
     def pause(self):
         if self.sound is not None:
@@ -126,7 +130,7 @@ class UserInfo:
         existing = {v[0] for v in self.songs.values()}
         try:
             for file in os.listdir(folder):
-                if '.mp3' in file:
+                if '.mp3' in file or '.wav' in file or '.ogg' in file:
                     path = os.path.join(folder, file)
                     if path not in existing:
                         existing.add(path)
@@ -170,15 +174,18 @@ class MusicApp(MDApp):
     reorder = None
     sound = None
     nav_drawer = None
+    ext_path = ''
 
     def build(self):
         self.theme_cls.theme_style = 'Dark'
         if platform == 'win':
             self.user_info = UserInfo(os.path.join(self.user_data_dir, 'music_app_save.txt'))
+            self.ext_path = '/'
         else:
             from android.permissions import request_permissions, Permission
             request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
-            self.user_info = UserInfo('music_app_save.txt')
+            self.ext_path = os.getenv('EXTERNAL_STORAGE')
+            self.user_info = UserInfo(os.path.join(self.ext_path, 'MusicApp', 'music_app_save.txt'))
 
         menu_items = MDList()
         menu_items.add_widget(OneLineListItem(text='Playlists', on_press=self.menu_action))
@@ -200,7 +207,8 @@ class MusicApp(MDApp):
                      MDRaisedButton(text='Set Title', on_release=self.dialog_action),
                      MDRaisedButton(text='Set Artist', on_release=self.dialog_action),
                      MDRaisedButton(text='Add Tag', on_release=self.dialog_action)])
-        self.file_manager = MDFileManager(exit_manager=self.exit_manager, select_path=self.select_path, ext=['.mp3'])
+        self.file_manager = MDFileManager(exit_manager=self.exit_manager, select_path=self.select_path,
+                                          ext=['mp3', 'wav', 'ogg'])
 
         toolbar = MDToolbar(title='Music App', pos_hint={'top': 1})
         toolbar.left_action_items.append(['menu', lambda x: self.nav_drawer.set_state('open')])
@@ -251,8 +259,8 @@ class MusicApp(MDApp):
                 self.items['Settings'].append(OneLineRightIconListItem(text=folder))
                 self.items['Settings'][-1].add_widget(IconRightWidget(icon='minus', on_release=self.remove_folder))
             self.items['Settings'].append(OneLineRightIconListItem(text='Add new folder'))
-            self.items['Settings'][-1].add_widget(IconRightWidget(icon='plus',
-                                                                  on_release=lambda x: self.file_manager.show('/')))
+            self.items['Settings'][-1].add_widget(
+                IconRightWidget(icon='plus', on_release=lambda x: self.file_manager.show(self.ext_path)))
 
         # Playlists
         if playlists:
